@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # BEDARO - BPS Data Repository Dashboard
 
 ![Next.js](https://img.shields.io/badge/Next.js-14.2.33-black)
@@ -10,71 +11,26 @@
 
 ## 📋 Daftar Isi
 
-- [Fitur Utama](#-fitur-utama)
-- [Teknologi](#-teknologi)
-- [Struktur Project](#-struktur-project)
-- [Instalasi](#-instalasi)
-- [Konfigurasi](#-konfigurasi)
-- [Penggunaan](#-penggunaan)
-- [API Documentation](#-api-documentation)
-- [Database Schema](#-database-schema)
-- [Security](#-security)
-- [Deployment](#-deployment)
-- [Contributing](#-contributing)
-- [License](#-license)
 
 ## 🚀 Fitur Utama
 
 ### 👥 Sistem Role-Based Access Control
-- **Super Admin**: Akses penuh ke semua fitur dan data
-- **Admin Ekonomi**: Mengelola data statistik ekonomi
-- **Admin Demografi**: Mengelola data statistik demografi  
-- **Admin Lingkungan**: Mengelola data statistik lingkungan hidup
 
 ### 📊 Manajemen Data Statistik
-- **Indikator Management**: CRUD indikator dengan metadata lengkap
-- **Data Management**: Input dan verifikasi data statistik tahunan/bulanan
-- **Inflation Data**: Manajemen khusus data inflasi dengan period tracking
-- **Export System**: Export data ke Excel dengan filtering
 
 ### 📄 Content Management
-- **Article Management**: Publikasi artikel dengan system approval
-- **FAQ Management**: Sistem tanya jawab dengan workflow answer-publish
-- **Media Management**: Upload dan manajemen file/gambar
 
 ### 🔐 Security Features
-- **JWT Authentication**: Token-based authentication system
-- **Domain Validation**: Akses terbatas untuk domain @bps.go.id
-- **Password Security**: Bcrypt hashing dengan salt
-- **Session Management**: Auto-refresh dan persistence
 
 ### 📱 User Experience
-- **Responsive Design**: Mobile-first responsive interface
-- **Real-time Updates**: Auto-refresh session callbacks
-- **Search & Filter**: Advanced filtering dan pagination
-- **Bulk Operations**: Mass delete dan bulk status updates
 
 ## 🛠 Teknologi
 
 ### Frontend
-- **Next.js 14** - React framework dengan App Router
-- **React 18** - UI library dengan hooks
-- **TypeScript** - Type-safe JavaScript
-- **Tailwind CSS** - Utility-first CSS framework
-- **Shadcn/ui** - Modern UI components
-- **Lucide React** - Icon library
 
 ### Backend  
-- **Next.js API Routes** - Server-side API endpoints
-- **MySQL 8.0** - Relational database
-- **JWT** - JSON Web Token authentication
-- **Bcrypt** - Password hashing
-- **UUID** - Unique identifier generation
 
 ### Development Tools
-- **ESLint** - Code linting
-- **Prettier** - Code formatting
-- **TypeScript** - Static type checking
 
 ## 📁 Struktur Project
 
@@ -108,9 +64,6 @@ bedaro/
 ## 🔧 Instalasi
 
 ### Prerequisites
-- Node.js 18.0 atau lebih tinggi
-- MySQL 8.0 atau lebih tinggi
-- npm atau yarn package manager
 
 ### 1. Clone Repository
 ```bash
@@ -177,19 +130,10 @@ ALLOWED_FILE_TYPES=jpg,jpeg,png,pdf,doc,docx,xls,xlsx
 
 ### Database Schema
 Database menggunakan skema relational dengan tabel utama:
-- `users` - User management dengan role-based access
-- `indicators` - Master data indikator statistik
-- `indicator_data` - Data points untuk setiap indikator
-- `articles` - Content management untuk artikel
-- `faqs` - Frequently Asked Questions
-- `categories` - Kategori untuk organisasi data
 
 ## 📖 Penggunaan
 
 ### 1. Login Sistem
-- Akses aplikasi melalui browser
-- Login menggunakan email domain @bps.go.id
-- Sistem akan redirect ke dashboard sesuai role
 
 ### 2. Dashboard Admin
 ```typescript
@@ -327,11 +271,6 @@ const permissions = {
 ```
 
 ### Security Best Practices
-- Password minimum 8 karakter
-- Rate limiting pada login attempts
-- SQL injection protection dengan parameterized queries
-- XSS protection dengan input sanitization
-- CSRF protection dengan token validation
 
 ## 🚀 Deployment
 
@@ -381,10 +320,6 @@ CMD ["npm", "start"]
 ## 📊 Performance Monitoring
 
 ### Key Metrics
-- **Response Time**: API response < 500ms
-- **Database Queries**: Optimized with indexes
-- **Memory Usage**: < 512MB per instance
-- **Error Rate**: < 1% of requests
 
 ### Monitoring Tools
 ```bash
@@ -422,10 +357,6 @@ npm run test:e2e
 5. Open Pull Request
 
 ### Code Standards
-- Follow TypeScript strict mode
-- Use ESLint configuration
-- Write unit tests for new features
-- Update documentation
 
 ### Commit Convention
 ```
@@ -441,31 +372,22 @@ chore: maintenance tasks
 ## 📝 Changelog
 
 ### Version 1.0.0 (2024-10-11)
-- ✅ Initial release
-- ✅ Role-based authentication system
-- ✅ Indicator and data management
-- ✅ Article and FAQ system
-- ✅ Export functionality
-- ✅ Responsive UI design
 
 ## 📞 Support
 
 ### Documentation
-- [Quick Start Guide](./QUICK-START-GUIDE.md)
-- [Technical Maintenance Guide](./TECHNICAL-MAINTENANCE-GUIDE.md)
-- [Future Development Roadmap](./FUTURE-DEVELOPMENT-ROADMAP.md)
 
 ### Contact
-- **Developer**: Development Team
-- **Organization**: Badan Pusat Statistik (BPS)
-- **Email**: support@bps.go.id
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
----
 
 **© 2024 Badan Pusat Statistik. All rights reserved.**
 
 Dibuat dengan ❤️ untuk kemajuan statistik Indonesia.
+=======
+# Bedaro
+Bedaro adalah sistem manajemen data statistik berbasis web untuk Badan Pusat Statistik (BPS) yang menyediakan dashboard administratif untuk pengelolaan artikel, FAQ, indikator, dan data statistik dengan sistem role-based access control.
+>>>>>>> a4dfcd9e89c5b647f35110dfaad9ba7d0cfb3173
