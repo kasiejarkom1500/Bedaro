@@ -1,0 +1,257 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* Updated to use orange as primary color with user's specified color palette */
+  --background: oklch(1 0 0); /* #FFFFFF - White background */
+  --foreground: oklch(0.2 0 0); /* #333333 - Dark gray for titles */
+  --card: oklch(0.98 0 0); /* Light gray for cards */
+  --card-foreground: oklch(0.33 0 0); /* #555555 - Medium gray for body text */
+  --popover: oklch(1 0 0); /* #FFFFFF - White popover */
+  --popover-foreground: oklch(0.2 0 0); /* #333333 - Dark gray text */
+  --primary: rgb(231, 84, 20); /* #FF6B00 - Orange primary */
+  --primary-foreground: #fefae0; /* #FFFFFF - White text on primary */
+  --secondary: rgb(242, 242, 242); /* Light gray secondary */
+  --secondary-foreground: oklch(0.2 0 0); /* #333333 - Dark gray text on secondary */
+  --muted: oklch(0.96 0 0); /* Light gray muted */
+  --muted-foreground: oklch(0.33 0 0); /* #555555 - Medium gray for muted text */
+  --accent: rgb(231, 84, 20); /* #FF6B00 - Orange accent */
+  --accent-foreground: oklch(1 0 0); /* #FFFFFF - White text on accent */
+  --destructive: oklch(0.577 0.245 27.325); /* Red for warnings */
+  --destructive-foreground: oklch(1 0 0); /* White text on destructive */
+  --border: oklch(0.9 0 0); /* Light gray border */
+  --input: oklch(0.98 0 0); /* Light gray input background */
+  --ring: oklch(0.65 0.15 45 / 0.5); /* Orange focus ring */
+
+  /* Updated BPS color palette with new orange primary and navigation accent colors */
+  --bps-orange: oklch(0.65 0.15 45); /* #FF6B00 - Orange primary */
+  --bps-orange-hover: oklch(0.6 0.15 45); /* #E66000 - Darker orange for hover */
+  --bps-orange-active: oklch(0.55 0.15 45); /* #CC5500 - Dark orange for active menu */
+  --bps-blue: oklch(0.5 0.15 240); /* #0077B6 - Blue for Economic Statistics */
+  --bps-teal: oklch(0.55 0.15 180); /* #009688 - Teal for Demographics & Social */
+  --bps-green: oklch(0.65 0.15 120); /* #4CAF50 - Green for Environment & Multi-domain */
+  --bps-gray-dark: oklch(0.2 0 0); /* #333333 - Dark gray for titles */
+  --bps-gray-medium: oklch(0.33 0 0); /* #555555 - Medium gray for body text */
+  --bps-white: oklch(1 0 0); /* #FFFFFF - Pure white */
+
+  --chart-1: rgb(251, 133, 0);
+  --chart-2: var(--bps-blue);
+  --chart-3: var(--bps-teal);
+  --chart-4: var(--bps-green);
+  --chart-5: var(--bps-white);
+  --radius: 0.5rem;
+  --sidebar: oklch(0.98 0 0);
+  --sidebar-foreground: var(--bps-gray-dark);
+  --sidebar-primary: var(--bps-white);
+  --sidebar-primary-foreground: var(--bps-gray-dark);
+  --sidebar-accent: rgb(251, 133, 0);
+  --sidebar-accent-foreground: var(--bps-white);
+  --sidebar-border: oklch(0.9 0 0);
+  --sidebar-ring: oklch(0.65 0.15 45 / 0.5);
+}
+
+.dark {
+  --background: oklch(0.1 0 0);
+  --foreground: oklch(0.95 0 0);
+  --card: oklch(0.15 0 0);
+  --card-foreground: oklch(0.95 0 0);
+  --popover: oklch(0.1 0 0);
+  --popover-foreground: oklch(0.95 0 0);
+  --primary: rgb(251, 133, 0);
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.2 0 0);
+  --secondary-foreground: oklch(0.95 0 0);
+  --muted: oklch(0.2 0 0);
+  --muted-foreground: oklch(0.7 0 0);
+  --accent: rgb(251, 133, 0);
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.2 0 0);
+  --input: oklch(0.2 0 0);
+  --ring: oklch(0.65 0.15 45 / 0.5);
+  --chart-1: var(--bps-orange);
+  --chart-2: var(--bps-blue);
+  --chart-3: var(--bps-teal);
+  --chart-4: var(--bps-green);
+  --chart-5: var(--bps-white);
+  --sidebar: oklch(0.15 0 0);
+  --sidebar-foreground: oklch(0.95 0 0);
+  --sidebar-primary: oklch(0.1 0 0);
+  --sidebar-primary-foreground: oklch(0.95 0 0);
+  --sidebar-accent: rgb(251, 133, 0);
+  --sidebar-accent-foreground: oklch(1 0 0);
+  --sidebar-border: oklch(0.2 0 0);
+  --sidebar-ring: oklch(0.65 0.15 45 / 0.5);
+}
+
+@theme inline {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+
+  /* Added new BPS color utilities for the updated color scheme */
+  --color-bps-orange: var(--bps-orange);
+  --color-bps-orange-hover: var(--bps-orange-hover);
+  --color-bps-orange-active: var(--bps-orange-active);
+  --color-bps-blue: var(--bps-blue);
+  --color-bps-teal: var(--bps-teal);
+  --color-bps-green: var(--bps-green);
+  --color-bps-gray-dark: var(--bps-gray-dark);
+  --color-bps-gray-medium: var(--bps-gray-medium);
+  --color-bps-white: var(--bps-white);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom placeholder styling with 30% transparency */
+@layer components {
+  .indicator-form input::placeholder,
+  .indicator-form textarea::placeholder {
+    opacity: 0.3;
+  }
+  
+  /* Alternative approach using color with alpha */
+  input::placeholder,
+  textarea::placeholder {
+    color: rgb(0 0 0 / 0.3);
+  }
+  
+  /* Dark mode placeholder */
+  .dark input::placeholder,
+  .dark textarea::placeholder {
+    color: rgb(255 255 255 / 0.3);
+  }
+
+  /* Line clamp utilities for text truncation */
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+  }
+  
+  .line-clamp-4 {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+    overflow: hidden;
+  }
+
+  /* Ensure dialog overlays are properly layered */
+  .dialog-overlay {
+    z-index: 50;
+  }
+  
+  .dialog-content {
+    z-index: 51;
+  }
+  
+  .error-dialog-overlay {
+    z-index: 9999;
+  }
+  
+  .error-dialog-content {
+    z-index: 10000;
+  }
+  
+  /* Prevent body scroll when modals are open */
+  .modal-open {
+    overflow: hidden;
+  }
+  
+  /* Custom placeholder styling with 30% transparency */
+  .placeholder-transparent::placeholder {
+    opacity: 0.3;
+  }
+  
+  .placeholder-transparent::-webkit-input-placeholder {
+    opacity: 0.3;
+  }
+  
+  .placeholder-transparent::-moz-placeholder {
+    opacity: 0.3;
+  }
+  
+  .placeholder-transparent:-ms-input-placeholder {
+    opacity: 0.3;
+  }
+
+  /* Custom scrollbar for activity list */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(251, 133, 0) transparent;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: #f1f5f9;
+    border-radius: 3px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgb(251, 133, 0);
+    border-radius: 3px;
+  }
+  
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgb(231, 84, 20);
+  }
+}
