@@ -39,9 +39,8 @@ export async function GET(request: NextRequest) {
     const search = searchParams.get('search') || ''
     const page = parseInt(searchParams.get('page') || '1')
     const limit = parseInt(searchParams.get('limit') || '10')
-    
-    // Calculate offset for pagination
-    const offset = (page - 1) * limit
+    const normalizedLimit = Math.max(1, Math.min(Number.isFinite(limit) ? limit : 10, 100))
+    const normalizedOffset = Math.max(0, (page - 1) * normalizedLimit)
     
     let baseQuery = `
       FROM faqs f
@@ -65,7 +64,7 @@ export async function GET(request: NextRequest) {
     const countQuery = `SELECT COUNT(*) as total ${baseQuery}`
     const [countResult] = await connection.execute(countQuery, queryParams) as any
     const totalItems = countResult[0].total
-    const totalPages = Math.ceil(totalItems / limit)
+    const totalPages = Math.ceil(totalItems / normalizedLimit)
     
     // Get paginated data
     const dataQuery = `
@@ -74,10 +73,10 @@ export async function GET(request: NextRequest) {
         u.full_name as answered_by_name
       ${baseQuery}
       ORDER BY f.created_at DESC
-      LIMIT ? OFFSET ?
+      LIMIT ${normalizedLimit} OFFSET ${normalizedOffset}
     `
     
-    const [faqs] = await connection.execute(dataQuery, [...queryParams, limit, offset])
+    const [faqs] = await connection.execute(dataQuery, queryParams)
     
     // Get statistics for status counts (without pagination)
     const statsQuery = `
@@ -109,7 +108,7 @@ export async function GET(request: NextRequest) {
         current_page: page,
         total_pages: totalPages,
         total_items: totalItems,
-        items_per_page: limit,
+        items_per_page: normalizedLimit,
         has_next: page < totalPages,
         has_prev: page > 1
       },

@@ -93,7 +93,9 @@ export class IndicatorModel {
     limit: number = 10,
     search?: string
   ): Promise<{ indicators: Indicator[]; total: number; pages: number }> {
-    const offset = (page - 1) * limit;
+    const safePage = Number.isFinite(page) ? Math.max(1, page) : 1;
+    const normalizedLimit = Math.max(1, Math.min(Number.isFinite(limit) ? limit : 10, 100));
+    const offset = (safePage - 1) * normalizedLimit;
     
     let whereClause = 'WHERE kategori = ?';
     let params: any[] = [kategori];
@@ -127,15 +129,15 @@ export class IndicatorModel {
       LEFT JOIN indicator_metadata im ON i.id = im.indicator_id
       ${whereClause}
       ORDER BY i.no ASC, i.created_at DESC
-      LIMIT ? OFFSET ?
+      LIMIT ${normalizedLimit} OFFSET ${offset}
     `;
     
-    const indicators = await executeQuery<Indicator[]>(query, [...params, limit, offset]);
+    const indicators = await executeQuery<Indicator[]>(query, params);
     
     return {
       indicators,
       total,
-      pages: Math.ceil(total / limit)
+      pages: Math.ceil(total / normalizedLimit)
     };
   }
 

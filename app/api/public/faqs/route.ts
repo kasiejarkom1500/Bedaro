@@ -20,7 +20,7 @@ export async function GET(request: NextRequest) {
     try {
       const url = new URL(request.url)
       const category = url.searchParams.get('category')
-      const limit = url.searchParams.get('limit')
+      const limitParam = url.searchParams.get('limit')
       
       let query = `
         SELECT 
@@ -48,9 +48,12 @@ export async function GET(request: NextRequest) {
       query += ' ORDER BY is_featured DESC, order_number ASC, created_at DESC'
       
       // Add limit if specified
-      if (limit && !isNaN(parseInt(limit))) {
-        query += ' LIMIT ?'
-        params.push(parseInt(limit))
+      if (limitParam) {
+        const parsedLimit = parseInt(limitParam, 10)
+        if (Number.isFinite(parsedLimit)) {
+          const normalizedLimit = Math.max(1, Math.min(parsedLimit, 100))
+          query += ` LIMIT ${normalizedLimit}`
+        }
       }
       
       console.log('Public FAQs query:', query)

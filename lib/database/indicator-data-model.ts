@@ -75,7 +75,9 @@ export class IndicatorDataModel {
       search?: string;
     }
   ): Promise<{ data: IndicatorDataWithDetails[]; total: number; pages: number }> {
-    const offset = (page - 1) * limit;
+    const safePage = Number.isFinite(page) ? Math.max(1, page) : 1;
+    const normalizedLimit = Math.max(1, Math.min(Number.isFinite(limit) ? limit : 10, 100));
+    const offset = (safePage - 1) * normalizedLimit;
     
     let whereClause = 'WHERE i.kategori = ?';
     let params: any[] = [kategori];
@@ -127,15 +129,15 @@ export class IndicatorDataModel {
       LEFT JOIN users uv ON id.verified_by = uv.id
       ${whereClause}
       ORDER BY id.year DESC, id.period_month DESC, id.period_quarter DESC, i.no ASC, id.created_at DESC
-      LIMIT ? OFFSET ?
+      LIMIT ${normalizedLimit} OFFSET ${offset}
     `;
     
-    const data = await executeQuery<IndicatorDataWithDetails[]>(query, [...params, limit, offset]);
+    const data = await executeQuery<IndicatorDataWithDetails[]>(query, params);
     
     return {
       data,
       total,
-      pages: Math.ceil(total / limit)
+      pages: Math.ceil(total / normalizedLimit)
     };
   }
 

@@ -75,8 +75,8 @@ export async function GET(request: NextRequest) {
     const countResult: any = await executeQuery(countQuery, queryParams);
     const total = countResult[0].total;
 
-    // Calculate pagination
-    const offset = (page - 1) * limit;
+    const normalizedLimit = Math.max(1, Math.min(Number.isFinite(limit) ? limit : 10, 100));
+    const normalizedOffset = Math.max(0, (page - 1) * normalizedLimit);
 
     // Check if updated_by column exists
     let hasUpdatedByColumn = false;
@@ -93,6 +93,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Build query based on column availability
+    const paginationClause = ` LIMIT ${normalizedLimit} OFFSET ${normalizedOffset}`;
+
     const query = hasUpdatedByColumn ? `
       SELECT 
         i.id,
@@ -122,7 +124,7 @@ export async function GET(request: NextRequest) {
       LEFT JOIN indicator_metadata im ON i.id = im.indicator_id
       ${whereClause}
       ORDER BY i.created_at DESC
-      LIMIT ? OFFSET ?
+      ${paginationClause}
     ` : `
       SELECT 
         i.id,
@@ -157,10 +159,10 @@ export async function GET(request: NextRequest) {
       LEFT JOIN indicator_metadata im ON i.id = im.indicator_id
       ${whereClause}
       ORDER BY i.created_at DESC
-      LIMIT ? OFFSET ?
+      ${paginationClause}
     `;
 
-    const rows: any = await executeQuery(query, [...queryParams, limit, offset]);
+    const rows: any = await executeQuery(query, queryParams);
 
     const indicators = rows.map((row: any) => ({
       id: row.id,
@@ -241,7 +243,7 @@ export async function GET(request: NextRequest) {
     // Log activity
     await logActivity(user.id, 'VIEW_INDICATORS', 'indicators', '', {
       page,
-      limit,
+      normalizedLimit,
       search,
       total_results: total
     });
@@ -250,9 +252,9 @@ export async function GET(request: NextRequest) {
       indicators,
       pagination: {
         current_page: page,
-        total_pages: Math.ceil(total / limit),
+        total_pages: Math.ceil(total / normalizedLimit),
         total_items: total,
-        items_per_page: limit
+        items_per_page: normalizedLimit
       },
       statistics: stats
     });
