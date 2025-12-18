@@ -9177,7 +9177,7 @@ INSERT INTO `article_sections` (`id`, `article_id`, `title`, `content`, `order_n
 --
 
 CREATE TABLE `categories` (
-  `id` varchar(36) NOT NULL DEFAULT uuid(),
+  `id` varchar(36) NOT NULL DEFAULT (UUID()),
   `name` varchar(100) NOT NULL,
   `slug` varchar(50) NOT NULL,
   `description` text DEFAULT NULL,
@@ -9205,7 +9205,7 @@ INSERT INTO `categories` (`id`, `name`, `slug`, `description`, `icon`, `color`, 
 --
 
 CREATE TABLE `data_audit_log` (
-  `id` varchar(36) NOT NULL DEFAULT uuid(),
+  `id` varchar(36) NOT NULL DEFAULT (UUID()),
   `table_name` varchar(50) NOT NULL,
   `record_id` varchar(36) NOT NULL,
   `action` enum('CREATE','UPDATE','DELETE','VERIFY','EXPORT','IMPORT') NOT NULL,
@@ -9864,7 +9864,7 @@ INSERT INTO `data_audit_log` (`id`, `table_name`, `record_id`, `action`, `old_va
 --
 
 CREATE TABLE `data_export_log` (
-  `id` varchar(36) NOT NULL DEFAULT uuid(),
+  `id` varchar(36) NOT NULL DEFAULT (UUID()),
   `export_type` enum('EXCEL','PDF','CSV','JSON') NOT NULL,
   `category` varchar(100) DEFAULT NULL,
   `filters` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`filters`)),
@@ -9886,7 +9886,7 @@ CREATE TABLE `data_export_log` (
 --
 
 CREATE TABLE `data_validation_rules` (
-  `id` varchar(36) NOT NULL DEFAULT uuid(),
+  `id` varchar(36) NOT NULL DEFAULT (UUID()),
   `indicator_id` varchar(36) NOT NULL,
   `rule_type` enum('RANGE','PATTERN','REQUIRED','CUSTOM') NOT NULL,
   `rule_config` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin NOT NULL CHECK (json_valid(`rule_config`)),
@@ -10247,7 +10247,7 @@ INSERT INTO `indicator_metadata` (`id`, `indicator_id`, `level`, `wilayah`, `per
 --
 
 CREATE TABLE `system_notifications` (
-  `id` varchar(36) NOT NULL DEFAULT uuid(),
+  `id` varchar(36) NOT NULL DEFAULT (UUID()),
   `title` varchar(255) NOT NULL,
   `message` text NOT NULL,
   `type` enum('INFO','WARNING','ERROR','SUCCESS') DEFAULT 'INFO',
@@ -10411,7 +10411,7 @@ CREATE TABLE `vw_latest_indicator_data` (
 --
 DROP TABLE IF EXISTS `vw_indicators_complete`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_indicators_complete`  AS SELECT `i`.`id` AS `id`, `i`.`code` AS `code`, `i`.`no` AS `no`, `i`.`indikator` AS `indikator`, `i`.`kategori` AS `kategori`, `i`.`subcategory` AS `subcategory`, `i`.`satuan` AS `satuan`, `i`.`source` AS `source`, `i`.`methodology` AS `methodology`, `i`.`deskripsi` AS `deskripsi`, `i`.`is_active` AS `is_active`, `c`.`name` AS `category_name`, `c`.`slug` AS `category_slug`, `c`.`color` AS `category_color`, `c`.`icon` AS `category_icon`, `im`.`level` AS `level`, `im`.`wilayah` AS `wilayah`, `im`.`periode` AS `periode`, `im`.`frequency` AS `frequency`, `im`.`konsep_definisi` AS `konsep_definisi`, `im`.`metode_perhitungan` AS `metode_perhitungan`, `im`.`interpretasi` AS `interpretasi`, `creator`.`full_name` AS `created_by_name`, `i`.`created_at` AS `created_at`, `i`.`updated_at` AS `updated_at` FROM (((`indicators` `i` left join `categories` `c` on(`i`.`category_id` = `c`.`id`)) left join `indicator_metadata` `im` on(`i`.`id` = `im`.`indicator_id`)) left join `users` `creator` on(`i`.`created_by` = `creator`.`id`)) ;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vw_indicators_complete`  AS SELECT `i`.`id` AS `id`, `i`.`code` AS `code`, `i`.`no` AS `no`, `i`.`indikator` AS `indikator`, `i`.`kategori` AS `kategori`, `i`.`subcategory` AS `subcategory`, `i`.`satuan` AS `satuan`, `i`.`source` AS `source`, `i`.`methodology` AS `methodology`, `i`.`deskripsi` AS `deskripsi`, `i`.`is_active` AS `is_active`, `c`.`name` AS `category_name`, `c`.`slug` AS `category_slug`, `c`.`color` AS `category_color`, `c`.`icon` AS `category_icon`, `im`.`level` AS `level`, `im`.`wilayah` AS `wilayah`, `im`.`periode` AS `periode`, `im`.`frequency` AS `frequency`, `im`.`konsep_definisi` AS `konsep_definisi`, `im`.`metode_perhitungan` AS `metode_perhitungan`, `im`.`interpretasi` AS `interpretasi`, `creator`.`full_name` AS `created_by_name`, `i`.`created_at` AS `created_at`, `i`.`updated_at` AS `updated_at` FROM (((`indicators` `i` left join `categories` `c` on(`i`.`category_id` = `c`.`id`)) left join `indicator_metadata` `im` on(`i`.`id` = `im`.`indicator_id`)) left join `users` `creator` on(`i`.`created_by` = `creator`.`id`)) ;
 
 -- --------------------------------------------------------
 
@@ -10420,7 +10420,7 @@ CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW 
 --
 DROP TABLE IF EXISTS `vw_latest_indicator_data`;
 
-CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `vw_latest_indicator_data`  AS SELECT `id`.`indicator_id` AS `indicator_id`, `i`.`code` AS `code`, `i`.`indikator` AS `indikator`, `i`.`kategori` AS `kategori`, `i`.`satuan` AS `satuan`, max(`id`.`year`) AS `latest_year`, (select `indicator_data`.`value` from `indicator_data` where `indicator_data`.`indicator_id` = `id`.`indicator_id` order by `indicator_data`.`year` desc limit 1) AS `latest_value`, (select `indicator_data`.`status` from `indicator_data` where `indicator_data`.`indicator_id` = `id`.`indicator_id` order by `indicator_data`.`year` desc limit 1) AS `latest_status`, count(distinct `id`.`year`) AS `years_available`, min(`id`.`year`) AS `first_year`, max(`id`.`year`) AS `last_year` FROM (`indicator_data` `id` join `indicators` `i` on(`id`.`indicator_id` = `i`.`id`)) WHERE `i`.`is_active` = 1 GROUP BY `id`.`indicator_id`, `i`.`code`, `i`.`indikator`, `i`.`kategori`, `i`.`satuan` ;
+CREATE ALGORITHM=UNDEFINED SQL SECURITY DEFINER VIEW `vw_latest_indicator_data`  AS SELECT `id`.`indicator_id` AS `indicator_id`, `i`.`code` AS `code`, `i`.`indikator` AS `indikator`, `i`.`kategori` AS `kategori`, `i`.`satuan` AS `satuan`, max(`id`.`year`) AS `latest_year`, (select `indicator_data`.`value` from `indicator_data` where `indicator_data`.`indicator_id` = `id`.`indicator_id` order by `indicator_data`.`year` desc limit 1) AS `latest_value`, (select `indicator_data`.`status` from `indicator_data` where `indicator_data`.`indicator_id` = `id`.`indicator_id` order by `indicator_data`.`year` desc limit 1) AS `latest_status`, count(distinct `id`.`year`) AS `years_available`, min(`id`.`year`) AS `first_year`, max(`id`.`year`) AS `last_year` FROM (`indicator_data` `id` join `indicators` `i` on(`id`.`indicator_id` = `i`.`id`)) WHERE `i`.`is_active` = 1 GROUP BY `id`.`indicator_id`, `i`.`code`, `i`.`indikator`, `i`.`kategori`, `i`.`satuan` ;
 
 --
 -- Indexes for dumped tables

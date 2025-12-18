@@ -72,8 +72,9 @@ export async function GET(request: NextRequest) {
     const countResult: any = await executeQuery(countQuery, queryParams);
     const total = countResult[0].total;
 
-    // Calculate pagination
-    const offset = (page - 1) * limit;
+    // Calculate pagination using safe numeric values to avoid prepared statement issues with LIMIT/OFFSET
+    const normalizedLimit = Math.max(1, Math.min(Number.isFinite(limit) ? limit : 10, 100));
+    const normalizedOffset = Math.max(0, (page - 1) * normalizedLimit);
 
     // Get indicator data with indicator info
     const query = `
@@ -100,10 +101,10 @@ export async function GET(request: NextRequest) {
       JOIN indicators i ON id.indicator_id = i.id
       ${whereClause}
       ORDER BY id.year DESC, id.period_month DESC, id.period_quarter DESC, i.indikator ASC
-      LIMIT ? OFFSET ?
+      LIMIT ${normalizedLimit} OFFSET ${normalizedOffset}
     `;
 
-    const rows: any = await executeQuery(query, [...queryParams, limit, offset]);
+    const rows: any = await executeQuery(query, queryParams);
 
     const indicatorData = rows.map((row: any) => ({
       id: row.id,
@@ -165,9 +166,9 @@ export async function GET(request: NextRequest) {
       data: indicatorData,
       pagination: {
         current_page: page,
-        total_pages: Math.ceil(total / limit),
+        total_pages: Math.ceil(total / normalizedLimit),
         total_items: total,
-        items_per_page: limit
+        items_per_page: normalizedLimit
       },
       statistics: stats,
       available_years: availableYears,
