@@ -9,6 +9,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
+  compiler: {
+    removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
+  },
   webpack: (config, { isServer }) => {
     // Exclude mysql2 from client-side bundle
     if (!isServer) {
