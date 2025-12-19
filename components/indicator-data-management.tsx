@@ -70,6 +70,7 @@ import { useIndicatorData, useDashboardStats } from "@/hooks/use-data-management
 import { CreateIndicatorDataRequest, IndicatorData } from "@/lib/api-client";
 import { IndicatorDataForm } from "./indicator-data-form";
 import { InflationDataForm } from "./inflation-data-form";
+import { InflationDataEditForm } from "./inflation-data-edit-form";
 
 // Helper function to format numbers for display in table (2 decimal places)
 const formatTableValue = (value: number | string | null | undefined): string => {
@@ -177,10 +178,11 @@ export function IndicatorDataManagement({ category, onSessionUpdate }: Indicator
       }
     };
 
-    if (isInflationDialogOpen) {
+    // Fetch whenever inflation dialog opens OR when edit dialog opens with inflation data
+    if (isInflationDialogOpen || isEditDialogOpen) {
       fetchInflationIndicators();
     }
-  }, [isInflationDialogOpen]);
+  }, [isInflationDialogOpen, isEditDialogOpen]);
 
   // Fetch all indicators for filter dropdown (without any pagination or search filters)
   const fetchAllIndicators = useCallback(async () => {
@@ -661,11 +663,18 @@ export function IndicatorDataManagement({ category, onSessionUpdate }: Indicator
       const standardData: CreateIndicatorDataRequest = {
         indicator_id: dataReq.indicator_id,
         year: dataReq.year,
-        period_month: dataReq.period_month,
         value: dataReq.value,
         notes: dataReq.notes,
         status: 'draft'
       };
+      
+      // Include appropriate period field based on what's provided
+      if (dataReq.period_month !== undefined) {
+        standardData.period_month = dataReq.period_month;
+      }
+      if (dataReq.period_quarter !== undefined) {
+        standardData.period_quarter = dataReq.period_quarter;
+      }
       
       await createIndicatorData(standardData);
       setIsInflationDialogOpen(false);
@@ -1789,17 +1798,39 @@ export function IndicatorDataManagement({ category, onSessionUpdate }: Indicator
           
           {/* Form Content */}
           <div className="p-6 overflow-y-auto max-h-[calc(95vh-180px)]">
-            {editingData && (
-              <IndicatorDataForm
-                initialData={editingData}
-                category={category}
-                onSubmit={handleEditData}
-                onCancel={() => {
-                  setIsEditDialogOpen(false);
-                  setEditingData(null);
-                }}
-              />
-            )}
+            {editingData && (() => {
+              // Check if this is inflation data
+              const isInflationData = editingData.indicator_name?.toLowerCase().includes('inflasi') || 
+                                     editingData.period_month !== null || 
+                                     editingData.period_quarter !== null;
+              
+              // Always use InflationDataEditForm if it's inflation data, even if inflationIndicators is still loading
+              if (isInflationData) {
+                return (
+                  <InflationDataEditForm
+                    initialData={editingData}
+                    indicators={inflationIndicators.length > 0 ? inflationIndicators : []}
+                    onSubmit={handleEditData}
+                    onCancel={() => {
+                      setIsEditDialogOpen(false);
+                      setEditingData(null);
+                    }}
+                  />
+                );
+              } else {
+                return (
+                  <IndicatorDataForm
+                    initialData={editingData}
+                    category={category}
+                    onSubmit={handleEditData}
+                    onCancel={() => {
+                      setIsEditDialogOpen(false);
+                      setEditingData(null);
+                    }}
+                  />
+                );
+              }
+            })()}
           </div>
         </DialogContent>
       </Dialog>

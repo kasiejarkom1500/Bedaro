@@ -37,6 +37,7 @@ export async function GET(request: NextRequest) {
         i.satuan,
         i.kategori,
         i.subcategory,
+        i.period_type,
         i.updated_at,
         im.level,
         im.wilayah,

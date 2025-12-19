@@ -8,38 +8,28 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Alert, AlertDescription } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { Calendar, TrendingUp, Save, X, AlertTriangle, FileText, Database, Info, CheckCircle2 } from "lucide-react"
+import { Calendar, Save, X, AlertTriangle, FileText, Database, Info } from "lucide-react"
 import { SimpleToast, useSimpleToast } from "@/components/simple-toast"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog"
 import type { Indicator, InflationDataForm } from "@/lib/types"
 
-interface InflationDataFormProps {
+interface InflationDataEditFormProps {
+  initialData: InflationDataForm & { source_document?: string }
   indicators: Indicator[]
-  initialData?: InflationDataForm & { source_document?: string }
   onSubmit: (data: InflationDataForm & { source_document?: string }) => Promise<void>
   onCancel: () => void
   isSubmitting?: boolean
 }
 
-export function InflationDataForm({ 
+export function InflationDataEditForm({ 
+  initialData,
   indicators, 
-  initialData, 
   onSubmit, 
   onCancel, 
   isSubmitting = false 
-}: InflationDataFormProps) {
-  const [formData, setFormData] = useState<InflationDataForm & { source_document?: string }>({
-    indicator_id: initialData?.indicator_id || '',
-    year: initialData?.year || new Date().getFullYear(),
-    period_month: initialData?.period_month,  // Can be undefined
-    period_quarter: initialData?.period_quarter,  // Can be undefined
-    value: initialData?.value || 0,
-    notes: initialData?.notes || '',
-    source_document: initialData?.source_document || ''
-  })
-
+}: InflationDataEditFormProps) {
+  const [formData, setFormData] = useState<InflationDataForm & { source_document?: string }>(initialData)
   const [errors, setErrors] = useState<string[]>([])
   const { toast, showToast, hideToast } = useSimpleToast()
   
@@ -74,25 +64,6 @@ export function InflationDataForm({
   }
 
   const periodType = getPeriodType()
-
-  // Auto-set period_month and period_quarter with default values if not set
-  useEffect(() => {
-    setFormData(prev => {
-      const updated = { ...prev }
-      
-      // Set period_month to 1 if not already set and indicator is loaded (only for non-quarterly)
-      if (!updated.period_month && selectedIndicator && periodType !== 'quarterly') {
-        updated.period_month = 1
-      }
-      
-      // Set period_quarter to 1 if not already set and indicator is quarterly
-      if (!updated.period_quarter && periodType === 'quarterly' && selectedIndicator) {
-        updated.period_quarter = 1
-      }
-      
-      return updated
-    })
-  }, [selectedIndicator?.id, periodType])
 
   const monthNames = [
     'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
@@ -151,7 +122,7 @@ export function InflationDataForm({
     const validationErrors = validateForm()
     if (validationErrors.length > 0) {
       setErrors(validationErrors)
-      setShowErrorModal(true) // Show error modal instead of toast
+      setShowErrorModal(true)
       return
     }
 
@@ -174,11 +145,11 @@ export function InflationDataForm({
       }
       
       await onSubmit(submitData)
-      setShowSuccessModal(true) // Show success modal
+      setShowSuccessModal(true)
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Terjadi kesalahan saat menyimpan data'
       setErrors([errorMessage])
-      setShowErrorModal(true) // Show error modal for submission errors
+      setShowErrorModal(true)
     }
   }
 
@@ -188,8 +159,8 @@ export function InflationDataForm({
     // Clear errors and hide modals when user starts typing
     if (errors.length > 0) {
       setErrors([])
-      hideToast() // Hide any existing error toast
-      setShowErrorModal(false) // Hide error modal
+      hideToast()
+      setShowErrorModal(false)
     }
 
     // Real-time validation for specific fields
@@ -233,51 +204,23 @@ export function InflationDataForm({
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Main Data Section */}
         <Card className="border-0 shadow-lg">
-          <CardHeader className="bg-gradient-to-r from-orange-50 to-red-50 rounded-t-lg">
+          <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-t-lg">
             <CardTitle className="flex items-center gap-3 text-lg">
-              <div className="p-2 bg-orange-100 rounded-lg">
-                <Database className="h-5 w-5 text-orange-600" />
+              <div className="p-2 bg-blue-100 rounded-lg">
+                <Database className="h-5 w-5 text-blue-600" />
               </div>
               Data Utama
             </CardTitle>
           </CardHeader>
           <CardContent className="p-6 space-y-6">
-            {/* Indicator Selection */}
+            {/* Indicator Selection - Read Only */}
             <div className="space-y-3">
-              <Label htmlFor="indicator" className="text-sm font-semibold text-gray-700">
+              <Label className="text-sm font-semibold text-gray-700">
                 Indikator Inflasi
-                <span className="text-red-500 ml-1">*</span>
               </Label>
-              <Select
-                value={formData.indicator_id}
-                onValueChange={(value) => updateField('indicator_id', value)}
-              >
-                <SelectTrigger className={`h-20 ${!formData.indicator_id && errors.length > 0 ? 'border-red-300 bg-red-50' : 'border-gray-200 focus:border-orange-400 hover:border-gray-300'}`}>
-                  <SelectValue placeholder="Pilih indikator inflasi yang akan diinput..." className="placeholder:opacity-30">
-                    {selectedIndicator ? selectedIndicator.indikator : "Pilih indikator inflasi yang akan diinput..."}
-                  </SelectValue>
-                </SelectTrigger>
-                <SelectContent className="max-h-60">
-                  {indicators.map((indicator) => (
-                    <SelectItem key={indicator.id} value={indicator.id} className="py-4">
-                      <div className="w-full">
-                        <div className="font-medium text-gray-900 text-sm leading-tight">
-                          {indicator.code ? `${indicator.code} - ` : ''}{indicator.indikator}
-                        </div>
-                        <div className="text-xs text-gray-500 mt-1">
-                          {indicator.kategori} • {indicator.satuan}
-                        </div>
-                      </div>
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              {!formData.indicator_id && errors.length > 0 && (
-                <p className="text-xs text-red-600 flex items-center gap-1">
-                  <AlertTriangle className="w-6 h-6" />
-                  Silakan pilih indikator inflasi
-                </p>
-              )}
+              <div className="p-3 bg-gray-100 rounded-lg border border-gray-300 text-gray-700">
+                {selectedIndicator?.indikator || 'Indikator tidak ditemukan'}
+              </div>
             </div>
 
             <Separator />
@@ -299,7 +242,7 @@ export function InflationDataForm({
                     value={formData.year}
                     onChange={(e) => updateField('year', parseInt(e.target.value) || 0)}
                     placeholder="2024"
-                    className={`pl-10 w-full h-11 text-center font-medium placeholder:opacity-30 ${!formData.year && errors.length > 0 ? 'border-red-300 bg-red-50' : 'border-gray-200 focus:border-orange-400 hover:border-gray-300'}`}
+                    className={`pl-10 w-full h-11 text-center font-medium placeholder:opacity-30 ${!formData.year && errors.length > 0 ? 'border-red-300 bg-red-50' : 'border-gray-200 focus:border-blue-400 hover:border-gray-300'}`}
                   />
                 </div>
               </div>
@@ -316,7 +259,7 @@ export function InflationDataForm({
                     onValueChange={(value) => updateField('period_month', parseInt(value))}
                     defaultValue={formData.period_month?.toString() || ''}
                   >
-                    <SelectTrigger className={`h-11 ${!formData.period_month ? 'border-red-300 bg-red-50' : 'border-gray-200 focus:border-orange-400 hover:border-gray-300'}`}>
+                    <SelectTrigger className={`h-11 ${!formData.period_month ? 'border-red-300 bg-red-50' : 'border-gray-200 focus:border-blue-400 hover:border-gray-300'}`}>
                       <SelectValue placeholder="Pilih bulan..." className="placeholder:opacity-30" />
                     </SelectTrigger>
                     <SelectContent>
@@ -345,7 +288,7 @@ export function InflationDataForm({
                     onValueChange={(value) => updateField('period_quarter', parseInt(value))}
                     defaultValue={formData.period_quarter?.toString() || ''}
                   >
-                    <SelectTrigger className={`h-11 ${!formData.period_quarter ? 'border-red-300 bg-red-50' : 'border-gray-200 focus:border-orange-400 hover:border-gray-300'}`}>
+                    <SelectTrigger className={`h-11 ${!formData.period_quarter ? 'border-red-300 bg-red-50' : 'border-gray-200 focus:border-blue-400 hover:border-gray-300'}`}>
                       <SelectValue placeholder="Pilih kuartal..." className="placeholder:opacity-30" />
                     </SelectTrigger>
                     <SelectContent>
@@ -380,7 +323,7 @@ export function InflationDataForm({
                   value={formData.value || ''}
                   onChange={(e) => updateField('value', parseFloat(e.target.value) || 0)}
                   placeholder="masukkan nilai inflasi..."
-                  className={`pl-5 pr-3 h-12 text-left font-medium placeholder:opacity-30 ${!formData.value && errors.length > 0 ? 'border-red-300 bg-red-50' : 'border-gray-200 focus:border-orange-400 hover:border-gray-300'}`}
+                  className={`pl-5 pr-3 h-12 text-left font-medium placeholder:opacity-30 ${!formData.value && errors.length > 0 ? 'border-red-300 bg-red-50' : 'border-gray-200 focus:border-blue-400 hover:border-gray-300'}`}
                 />
               </div>
               <p className="text-xs text-gray-500 flex items-center gap-1">
@@ -456,10 +399,10 @@ export function InflationDataForm({
           <Button 
             type="submit" 
             disabled={isSubmitting}
-            className="flex-1 h-11 px-8 bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 text-white shadow-lg hover:shadow-xl transition-all duration-200"
+            className="flex-1 h-11 px-8 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-200"
           >
             <Save className="w-4 h-4 mr-2" />
-            {isSubmitting ? 'Menyimpan...' : 'Simpan Data Inflasi'}
+            {isSubmitting ? 'Menyimpan...' : 'Simpan Perubahan'}
           </Button>
         </div>
       </form>
@@ -511,14 +454,14 @@ export function InflationDataForm({
         <DialogContent className="max-w-md">
           <div className="text-center p-4">
             <div className="mx-auto flex items-center justify-center w-16 h-16 bg-green-100 rounded-full mb-4">
-              <CheckCircle2 className="w-8 h-8 text-green-600" />
+              <div className="text-green-600 text-2xl">✓</div>
             </div>
             <DialogHeader>
               <DialogTitle className="text-xl font-bold text-green-600 mb-2">
-                Data Berhasil Disimpan
+                Data Berhasil Diperbarui
               </DialogTitle>
               <DialogDescription className="text-gray-600 mb-4">
-                Data inflasi telah berhasil ditambahkan ke sistem
+                Data inflasi telah berhasil disimpan ke sistem
               </DialogDescription>
             </DialogHeader>
             
@@ -530,7 +473,7 @@ export function InflationDataForm({
                 </div>
                 <div className="flex justify-between">
                   <span className="font-medium">Periode:</span>
-                  <span>{formData.period_month ? `${monthNames[formData.period_month - 1]} ${formData.year}` : `Tahun ${formData.year}`}</span>
+                  <span>{periodType === 'quarterly' && formData.period_quarter ? `Q${formData.period_quarter} ${formData.year}` : formData.period_month ? `${monthNames[formData.period_month - 1]} ${formData.year}` : `Tahun ${formData.year}`}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="font-medium">Nilai:</span>
@@ -543,7 +486,7 @@ export function InflationDataForm({
               <Button 
                 onClick={() => {
                   setShowSuccessModal(false)
-                  onCancel() // Close the form and return to main page
+                  onCancel()
                 }}
                 className="w-full bg-green-600 hover:bg-green-700 text-white"
               >

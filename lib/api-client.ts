@@ -53,6 +53,7 @@ interface Indicator {
   level?: string;
   wilayah?: string;
   periode?: string;
+  period_type?: 'yearly' | 'monthly' | 'quarterly';
   konsep_definisi?: string;
   metode_perhitungan?: string;
   interpretasi?: string;
@@ -100,6 +101,7 @@ interface CreateIndicatorRequest {
   level?: string;
   wilayah?: string;
   periode?: string;
+  period_type?: 'yearly' | 'monthly' | 'quarterly';
   konsep_definisi?: string;
   metode_perhitungan?: string;
   interpretasi?: string;
