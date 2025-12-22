@@ -59,6 +59,11 @@ export function IndicatorForm({ initialData, defaultCategory, onSubmit, onCancel
     interpretasi: initialData?.interpretasi || ''
   });
 
+  // State untuk period_type (yearly/monthly/quarterly)
+  const [periodType, setPeriodType] = useState<'yearly' | 'monthly' | 'quarterly'>(
+    (initialData as any)?.period_type || 'yearly'
+  );
+
   // Update state when initialData changes
   useEffect(() => {
     if (initialData) {
@@ -84,6 +89,8 @@ export function IndicatorForm({ initialData, defaultCategory, onSubmit, onCancel
         interpretasi: initialData.interpretasi || ''
       });
 
+      setPeriodType((initialData as any)?.period_type || 'yearly');
+
       setCurrentStep(1);
       setTouchedFields({});
     } else {
@@ -107,6 +114,7 @@ export function IndicatorForm({ initialData, defaultCategory, onSubmit, onCancel
         metode_perhitungan: '',
         interpretasi: ''
       });
+      setPeriodType('yearly');
       setCurrentStep(1);
       setTouchedFields({});
     }
@@ -126,7 +134,7 @@ export function IndicatorForm({ initialData, defaultCategory, onSubmit, onCancel
 
     try {
       setLoading(true);
-      await onSubmit({ ...indicatorData, ...metadataData });
+      await onSubmit({ ...indicatorData, ...metadataData, period_type: periodType });
     } catch (error) {
       // Error handled by parent component
     } finally {
@@ -477,10 +485,30 @@ export function IndicatorForm({ initialData, defaultCategory, onSubmit, onCancel
                   />
                 </div>
 
-                {/* Periode */}
+                {/* Periode Type */}
+                <div className="space-y-3 min-w-0">
+                  <Label htmlFor="period_type" className="text-sm font-semibold text-gray-700">
+                    Tipe Periode
+                  </Label>
+                  <Select
+                    value={periodType}
+                    onValueChange={(value) => setPeriodType(value as 'yearly' | 'monthly' | 'quarterly')}
+                  >
+                    <SelectTrigger className="h-12 w-full min-w-0 border-gray-300 focus:border-orange-400 hover:border-orange-300">
+                      <SelectValue placeholder="Pilih tipe periode..." />
+                    </SelectTrigger>
+                    <SelectContent className="z-[100] bg-white border border-gray-200 shadow-xl">
+                      <SelectItem value="yearly" className="py-3 cursor-pointer hover:bg-gray-50">Tahunan (Yearly)</SelectItem>
+                      <SelectItem value="monthly" className="py-3 cursor-pointer hover:bg-gray-50">Bulanan (Monthly)</SelectItem>
+                      <SelectItem value="quarterly" className="py-3 cursor-pointer hover:bg-gray-50">Triwulanan (Quarterly)</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Periode Deskripsi */}
                 <div className="space-y-3 min-w-0">
                   <Label htmlFor="periode" className="text-sm font-semibold text-gray-700">
-                    Periode
+                    Periode Deskripsi
                   </Label>
                   <Input
                     id="periode"

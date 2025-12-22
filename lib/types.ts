@@ -173,7 +173,8 @@ export interface PeriodFilter {
 export interface InflationDataForm {
   indicator_id: string
   year: number
-  period_month: number
+  period_month?: number  // Optional - bisa undefined
+  period_quarter?: number  // Optional untuk quarterly indicators
   value: number
   notes?: string
 }

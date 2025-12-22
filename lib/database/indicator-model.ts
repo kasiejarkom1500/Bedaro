@@ -60,6 +60,7 @@ export interface CreateIndicatorRequest {
   level?: string;
   wilayah?: string;
   periode?: string;
+  period_type?: 'yearly' | 'monthly' | 'quarterly';
   konsep_definisi?: string;
   metode_perhitungan?: string;
   interpretasi?: string;
@@ -170,12 +171,12 @@ export class IndicatorModel {
     const id = uuidv4();
     
     return executeTransaction(async (connection) => {
-      // Insert indicator
+      // Insert indicator dengan period_type
       const query = `
         INSERT INTO indicators (
           id, code, no, indikator, kategori, subcategory, satuan,
-          source, methodology, deskripsi, created_by, category_id
-        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+          source, methodology, deskripsi, created_by, category_id, period_type
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `;
       
       await connection.execute(query, [
@@ -190,7 +191,8 @@ export class IndicatorModel {
         data.methodology || null,
         data.deskripsi || null,
         data.created_by,
-        data.category_id || null
+        data.category_id || null,
+        data.period_type || 'yearly'
       ]);
 
       // Insert metadata if provided
@@ -243,7 +245,7 @@ export class IndicatorModel {
       );
 
       // Separate indicator fields from metadata fields
-      const indicatorFields = ['code', 'no', 'indikator', 'kategori', 'subcategory', 'satuan', 'source', 'methodology', 'deskripsi', 'is_active'];
+      const indicatorFields = ['code', 'no', 'indikator', 'kategori', 'subcategory', 'satuan', 'source', 'methodology', 'deskripsi', 'is_active', 'period_type'];
       const metadataFields = ['level', 'wilayah', 'periode', 'konsep_definisi', 'metode_perhitungan', 'interpretasi'];
 
       // Update indicators table (exclude category_id to avoid foreign key constraint)

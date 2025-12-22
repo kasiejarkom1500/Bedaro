@@ -323,10 +323,9 @@ export async function POST(request: NextRequest) {
         return createErrorResponse('Period month should not be set for quarterly indicators', 400);
       }
     } else {
-      // Yearly indicators
-      if (body.period_month || body.period_quarter) {
-        return createErrorResponse('Period month/quarter should not be set for yearly indicators', 400);
-      }
+      // Yearly indicators - allow period_month for reference even though it's yearly
+      // User can input month for context/reference purposes
+      // No specific validation needed for yearly
     }
 
     // Check role-based access to category
